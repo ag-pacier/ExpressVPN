@@ -17,3 +17,6 @@ docker run -d --privileged -env ACTIVATION=(activation code) \
     --restart=unless-stopped --cap-add=NET_ADMIN \
     -p (ports the other containers need) dietolead/ExpressVPN
 ```
+
+# Warnings
+This is one of those naughty containers that run as root and need privileged access to work. I experimented for weeks with different combinations of rights before settling on... just about all the rights. Monitor this container for suspicious activity and isolate the host running it as much as possible for your own network's saftey! If you have any advice on how to run this more safely, please reach out to me via GitHub.
