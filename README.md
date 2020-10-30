@@ -1,4 +1,4 @@
-![Docker Automated build](https://img.shields.io/docker/automated/dietolead/expressvpn?style=for-the-badge)
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/dietolead/expressvpn?style=for-the-badge) ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dietolead/expressvpn?style=for-the-badge)
 # ExpressVPN
 Docker container for working with ExpressVPN.
 I recommend putting this container with others to act as the outgoing container. Containers should use this container as its network (this will ensure the other container won't "leak") and publish all ports you need for the containers attached at the VPN container. Additionally, ExpressVPN seems to randomly disconnect long-standing connections. To combat this, the container attempts to re-establish the connection and completely restarts the container if it is unable to do so.
