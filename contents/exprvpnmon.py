@@ -3,7 +3,9 @@
 
 from os import environ
 from time import sleep
-import subprocess, sys, shutil, pexpect
+from shutil import copyfile
+from sys import exit
+import subprocess, pexpect
 
 def check_location(loc):
     """Makes sure the location is valid. I'm just going to list the big ones.
@@ -40,7 +42,7 @@ def conn_start():
     if result == 0:
         print("ExpressVPN connection initiated.")
     else:
-        sys.exit('Something has gone wrong. Terminating.')
+        exit('Something has gone wrong. Terminating.')
 
 
 def first_start():
@@ -48,10 +50,10 @@ def first_start():
         DNS gets locked during startup so we need to dick around to
         get it to behave."""
     if environ.get('ACTIVATION') == None:
-        sys.exit('No activation code set, please set and run again.')
-    shutil.copyfile('/etc/resolv.conf', '/tmp/resolv.conf')
+        exit('No activation code set, please set and run again.')
+    copyfile('/etc/resolv.conf', '/tmp/resolv.conf')
     subprocess.call(['umount', '/etc/resolv.conf'])
-    shutil.copyfile('/tmp/resolv.conf', '/etc/resolv.conf')
+    copyfile('/tmp/resolv.conf', '/etc/resolv.conf')
     result = subprocess.check_output(['service', 'expressvpn', 'restart'])
     if b'[ OK ]' in result:
         child = pexpect.spawn('expressvpn activate')
@@ -66,7 +68,7 @@ def first_start():
             child.sendline('n')
         else:
             print(environ.get('ACTIVATION'))
-            sys.exit("Unable to activate ExpressVPN.")
+            exit("Unable to activate ExpressVPN.")
         child.expect(pexpect.EOF)
         conn_start()
         sleep(60)
@@ -78,7 +80,7 @@ def recovery():
     attempt_number = 5
     while attempt < attempt_number:
         conn_start()
-        sleep(10 * attempt)
+        sleep(5 * attempt)
         if conn_status():
             print("ExpressVPN recovered successfully.")
             break
@@ -87,7 +89,7 @@ def recovery():
             if attempt >= attempt_number:
                 print(
                     "Unable to reconnect ExpressVPN.")
-                sys.exit(
+                exit(
                     "Terminating monitor script.")
 
 
