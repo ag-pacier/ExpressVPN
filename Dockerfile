@@ -5,8 +5,8 @@ ENV ACTIVATION Code
 #Update apt, install packages needed, purge cache
 RUN apt-get update && apt-get dist-upgrade -y && \
     apt-get install ca-certificates python3 iproute2 python3-pip \
-    -y --no-install-recommends --no-cache-dir && rm -rf /var/lib/apt/lists/* \
-    && pip3 install pexpect==4.8.0
+    -y --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+    && pip3 install pexpect==4.8.0 --no-cache-dir
 #copy the junk in
 COPY contents .
 #Install VPN, remove the deb
