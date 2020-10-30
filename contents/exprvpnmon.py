@@ -18,7 +18,7 @@ def check_location(loc):
         print('No location found, picking smart.')
         return 'smart'
     else:
-        print('Invalid location, reverting to smart.')
+        print('Invalid or unlisted location, reverting to smart.')
         return 'smart'
 
 
@@ -47,7 +47,7 @@ def conn_start():
 
 def first_start():
     """Activates VPN, checks for success then starts the connection.
-        DNS gets locked during startup so we need to dick around to
+        DNS gets locked during startup so we need to mess around to
         get it to behave."""
     if environ.get('ACTIVATION') == None:
         exit('No activation code set, please set and run again.')
@@ -92,7 +92,11 @@ def recovery():
                 exit(
                     "Terminating monitor script.")
 
-
+#Main loop, activates and connects
+#Every 60 seconds, it will check to make sure its connected
+#On failure, it runs through the recovery loop
+#If the recovery loop can't get the connection back, it terminates the script
+#which restarts the container
 first_start()
 while True:
     if conn_status():
