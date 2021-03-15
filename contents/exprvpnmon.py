@@ -86,7 +86,7 @@ def first_start():
         elif out == 1:
             child.sendline('n')
         else:
-            logging.DEBUG(f"Activation used: {environ.get('ACTIVATION')}")
+            logging.debug(f"Activation used: {environ.get('ACTIVATION')}")
             logging.error('Unable to activate ExpressVPN.')
             exit("Unable to activate ExpressVPN.")
         child.expect(pexpect.EOF)
