@@ -130,3 +130,6 @@ dmypy.json
 
 # VSCode nonsense
 .vscode
+
+# removing my environment file
+*.env
