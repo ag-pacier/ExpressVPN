@@ -60,7 +60,7 @@ def conn_start():
     if result == 0:
         logging.info("ExpressVPN connection initiated.")
     else:
-        logging.error('Something has gone wrong. Terminating.')
+        logging.critical('An unknown error caused the expressvpn connect command to fail.')
 
 
 def first_start():
@@ -68,8 +68,8 @@ def first_start():
         DNS gets locked during startup so we need to mess around to
         get it to behave."""
     if environ.get('ACTIVATION') == None:
-        logging.error('No activation code found.')
-        exit('No activation code set, please set and run again.')
+        logging.critical('No activation code found. Unable to continue!')
+        exit()
     copyfile('/etc/resolv.conf', '/tmp/resolv.conf')
     subprocess.call(['umount', '/etc/resolv.conf'])
     copyfile('/tmp/resolv.conf', '/etc/resolv.conf')
@@ -83,12 +83,14 @@ def first_start():
             child.sendline(environ.get('ACTIVATION'))
             child.expect("information.")
             child.sendline('n')
+            logging.info("Activation successful!")
         elif out == 1:
             child.sendline('n')
+            logging.debug("Activation called but client is already activated.")
         else:
             logging.debug(f"Activation used: {environ.get('ACTIVATION')}")
-            logging.error('Unable to activate ExpressVPN.')
-            exit("Unable to activate ExpressVPN.")
+            logging.critical('Unable to activate ExpressVPN.')
+            exit()
         child.expect(pexpect.EOF)
         conn_start()
         sleep(60)
@@ -107,10 +109,8 @@ def recovery():
         else:
             attempt += 1
             if attempt >= attempt_number:
-                logging.error(
-                    "Unable to reconnect ExpressVPN.")
-                exit(
-                    "Terminating monitor script.")
+                logging.critical("Unable to reconnect ExpressVPN. Exiting script.")
+                exit()
 
 #Main loop, activates and connects
 #Every 60 seconds, it will check to make sure its connected
