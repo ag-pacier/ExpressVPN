@@ -5,7 +5,9 @@ from os import environ
 from time import sleep
 from shutil import copyfile
 from sys import exit
-import subprocess, pexpect
+import subprocess, pexpect, logging
+
+logger = logging.getLogger(__name__)
 
 def check_location(loc):
     """Makes sure the location is valid. I'm just going to list the big ones.
@@ -97,9 +99,10 @@ def recovery():
 #On failure, it runs through the recovery loop
 #If the recovery loop can't get the connection back, it terminates the script
 #which restarts the container
-first_start()
-while True:
-    if conn_status():
-        sleep(60)
-    else:
-        recovery()
+if __name__ == "__main__":
+    first_start()
+    while True:
+        if conn_status():
+            sleep(60)
+        else:
+            recovery()
