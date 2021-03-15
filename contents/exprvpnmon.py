@@ -9,6 +9,20 @@ import subprocess, pexpect, logging
 
 logger = logging.getLogger(__name__)
 
+#create console out
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+#create logging file
+log_location = r'/log/debug.log'
+fh = logging.FileHandler(log_location)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
 def check_location(loc):
     """Makes sure the location is valid. I'm just going to list the big ones.
         If this is stopping you from doing something cool, remove it yourself!"""
