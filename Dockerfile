@@ -9,6 +9,8 @@ RUN apt-get update && apt-get dist-upgrade -y && \
 COPY contents .
 #Install VPN, remove the deb
 RUN dpkg -i /expressvpn_3.6.0.70-1_amd64.deb && rm /*.deb
+#Create debug folder for logging
+RUN mkdir /debug
 #Healthcheck sees if the expressvpn is connected
 HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=2 CMD ["/bin/bash", "/health.sh"]
 #Start the VPN by running the monitor script
