@@ -67,6 +67,7 @@ def first_start():
     """Activates VPN, checks for success then starts the connection.
         DNS gets locked during startup so we need to mess around to
         get it to behave."""
+    logging.info("Beginning initial startup.")
     if environ.get('ACTIVATION') == None:
         logging.critical('No activation code found. Unable to continue!')
         exit()
