@@ -30,7 +30,7 @@ def check_location(loc):
     valid_locations = ('smart', 'usny', 'ussf', 'usch', 'usda', 'usla2', 'usmi2',
         'usse', 'cato', 'cato2')
     if loc in valid_locations:
-        logging.info('Location valid, returning.')
+        logging.debug('Location valid, returning.')
         return loc
     elif loc == None:
         logging.warning('No location found, picking smart.')
