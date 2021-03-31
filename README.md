@@ -21,3 +21,9 @@ docker run -d --privileged -env ACTIVATION=(activation code) \
 
 # Warnings
 This is one of those naughty containers that run as root and need privileged access to work. I experimented for weeks with different combinations of rights before settling on... just about all the rights. Monitor this container for suspicious activity and isolate the host running it as much as possible for your own network's saftey! If you have any advice on how to run this more safely, please reach out to me via GitHub.
+
+# Request
+You've dug this far and I'm grateful :D
+In the DEV version, I have changed how logging happens so that logs output to a file. I'm investigating why the VPN fails after a while to the point that the container has to restart. With the exception in which activation fails, my logs do not grab IDing info and I would be grateful if you stumble on this error and share your logs with me. I'm maximizing my personal allowances of connections to run containers to try to grab this error.
+
+My final goal is to have an ExpressVPN container that handles interruptions gracefully!
