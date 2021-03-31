@@ -7,9 +7,22 @@ from shutil import copyfile
 from sys import exit
 import subprocess, pexpect, logging
 
-#create logging file
-log_location = r'/log/debug.log'
-logging.basicConfig(filename=log_location, encoding='utf-8', level=logging.DEBUG)
+#Create logging
+logger = logging.getLogger('ExpressVPN')
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+stream = logging.StreamHandler()
+stream.setLevel(logging.INFO)
+stream.setFormatter(formatter)
+logger.addHandler(stream)
+
+fh = logging.FileHandler('/log/debug.log', mode='a')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
 
 def check_location(loc):
     """Makes sure the location is valid. I'm just going to list the big ones.
@@ -17,13 +30,13 @@ def check_location(loc):
     valid_locations = ('smart', 'usny', 'ussf', 'usch', 'usda', 'usla2', 'usmi2',
         'usse', 'cato', 'cato2')
     if loc in valid_locations:
-        logging.debug('Location valid, returning.')
+        logger.debug('Location valid, returning.')
         return loc
     elif loc == None:
-        logging.warning('No location found, picking smart.')
+        logger.warning('No location found, picking smart.')
         return 'smart'
     else:
-        logging.warning('Invalid or unlisted location, reverting to smart.')
+        logger.warning('Invalid or unlisted location, reverting to smart.')
         return 'smart'
 
 
@@ -31,12 +44,12 @@ def conn_status():
     """Checks, parses and returns status of VPN connection as True or False"""
     result = subprocess.check_output(["expressvpn", "status"])
     if b"Connected" in result:
-        logging.info("ExpressVPN connection was checked and is live.")
+        logger.info("ExpressVPN connection was checked and is live.")
         if b"A new version" in result:
-            logging.warning("ExpressVPN reports there is a new version available.")
+            logger.warning("ExpressVPN reports there is a new version available.")
         return True
     else:
-        logging.warning("ExpressVPN connection was checked and is down.")
+        logger.warning("ExpressVPN connection was checked and is down.")
         return False
 
 
@@ -45,18 +58,18 @@ def conn_start():
     location = check_location(environ.get('LOCATION'))
     result = subprocess.call(["expressvpn", "connect", location])
     if result == 0:
-        logging.info("ExpressVPN connection initiated.")
+        logger.info("ExpressVPN connection initiated.")
     else:
-        logging.critical('An unknown error caused the expressvpn connect command to fail.')
+        logger.critical('An unknown error caused the expressvpn connect command to fail.')
 
 
 def first_start():
     """Activates VPN, checks for success then starts the connection.
         DNS gets locked during startup so we need to mess around to
         get it to behave."""
-    logging.info("Beginning initial startup.")
+    logger.info("Beginning initial startup.")
     if environ.get('ACTIVATION') == None:
-        logging.critical('No activation code found. Unable to continue!')
+        logger.critical('No activation code found. Unable to continue!')
         exit()
     copyfile('/etc/resolv.conf', '/tmp/resolv.conf')
     subprocess.call(['umount', '/etc/resolv.conf'])
@@ -71,13 +84,13 @@ def first_start():
             child.sendline(environ.get('ACTIVATION'))
             child.expect("information.")
             child.sendline('n')
-            logging.info("Activation successful!")
+            logger.info("Activation successful!")
         elif out == 1:
             child.sendline('n')
-            logging.debug("Activation called but client is already activated.")
+            logger.debug("Activation called but client is already activated.")
         else:
-            logging.debug(f"Activation used: {environ.get('ACTIVATION')}")
-            logging.critical('Unable to activate ExpressVPN.')
+            logger.debug(f"Activation used: {environ.get('ACTIVATION')}")
+            logger.critical('Unable to activate ExpressVPN.')
             exit()
         child.expect(pexpect.EOF)
         conn_start()
@@ -85,19 +98,19 @@ def first_start():
 
 
 def recovery():
-    logging.warning("Attempting to recover ExpressVPN.")
+    logger.warning("Attempting to recover ExpressVPN.")
     attempt = 1
     attempt_number = 5
     while attempt < attempt_number:
         conn_start()
         sleep(5 * attempt)
         if conn_status():
-            logging.info("ExpressVPN recovered successfully.")
+            logger.info("ExpressVPN recovered successfully.")
             break
         else:
             attempt += 1
             if attempt >= attempt_number:
-                logging.critical("Unable to reconnect ExpressVPN. Exiting script.")
+                logger.critical("Unable to reconnect ExpressVPN. Exiting script.")
                 exit()
 
 #Main loop, activates and connects

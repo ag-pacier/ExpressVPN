@@ -16,7 +16,7 @@ Example docker run command:
 docker run -d --privileged -env ACTIVATION=(activation code) \
     -env LOCATION=(valid CLI ExpressVPN location) --device=/dev/net/tun \
     --restart=unless-stopped --cap-add=NET_ADMIN \
-    -p (ports the other containers need) dietolead/ExpressVPN
+    -p (ports the other containers need) -v <location for logs>:/log dietolead/ExpressVPN
 ```
 
 # Warnings
