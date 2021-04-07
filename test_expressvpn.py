@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from unittest import mock
 from unittest.mock import patch
 import contents.exprvpnmon
@@ -25,6 +25,15 @@ class TestExpress(unittest.TestCase):
             mocked_output.return_value = b'Not found'
             self.assertEqual(contents.exprvpnmon.conn_status(), False)
 
+    def test_first_start_blank(self):
+
+        with self.assertRaises(SystemExit):
+            contents.exprvpnmon.first_start()
+        
+    @mock.patch.dict(os.environ, {"ACTIVATION": "bad"})
+    def test_first_start_bad(self):
+        with self.assertRaises(SystemExit):
+            contents.exprvpnmon.first_start()
 
 if __name__ == '__main__':
     unittest.main()
