@@ -82,7 +82,11 @@ def first_start():
             "Already activated. Logout from your account (y/N)?"])
         if out == 0:
             child.sendline(environ.get('ACTIVATION'))
-            child.expect("information.")
+            try:
+                child.expect("information.")
+            except pexpect.exceptions.EOF as e:
+                logger.critical(f"Bad activation used: {environ.get('ACTIVATION')}")
+                exit()
             child.sendline('n')
             logger.info("Activation successful!")
         elif out == 1:
